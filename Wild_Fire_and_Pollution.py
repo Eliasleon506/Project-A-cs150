@@ -32,24 +32,36 @@ app.layout = html.Div([
             ],
             value=["Santa Barbara"],
         )
+    ),
+    html.Div(
+        dcc.Dropdown(
+            id="my-dropdown2",
+            multi=False,
+            options=[
+                {"label": "AQI", "value": "AQI"},
+                {"label": "PM2.5", "value": "PM2.5"},
+            ],
+            value=["AQI"],
+        )
     )
 ])
 
 @app.callback(
     Output(component_id="line-chart", component_property="figure"),
     [Input(component_id="my-dropdown", component_property="value")],
+    [Input(component_id="my-dropdown2", component_property="value")],
 )
 ##
 ## function from tweeter_app.py
-def update_graph(value):
-    if len(value) == 0:
+def update_graph(location, metric):
+    if len(location) == 0:
         return {}
     else:
-        df_filtered = df[df["Location"].isin(value)]
+        df_filtered = df[df["Location"].isin(location)]
         fig = px.line(
             data_frame=df_filtered,
             x="Date",
-            y="AQI",
+            y=metric,
             color="Location",
             labels={
                 "AQI": "AQI",
@@ -70,7 +82,7 @@ def update_graph(value):
         fig.add_annotation(
             x= "2017-12-04",
             y=df["AQI"].max(),
-            text = "Start of Thomas Fire",
+            text = "Start of Thomas Fire (04,12,2017)",
             arrowhead = 1
         )
 
